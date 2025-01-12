@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reaction Test</title>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script>
+        let status = 0;
+        let bestTime = Infinity;
+        let startTime;
+
+        function changeBackground(title, hint, color) {
+            $("body").css("background-color", color);
+            $("h1").text(title);
+            $("h2").text(hint);
+        }
+
+        function tooSoon() {
+            status = 0;
+            $(".instructions").show();
+            changeBackground("Too Soon!", "Calm down!", "royalblue");
+        }
+
+        function showResult() {
+            const time = (Date.now() - startTime).toFixed(0);
+            status = 0;
+            $(".instructions").show();
+
+            let hint;
+            if (time <= 100) {
+                hint = "Unpredictable!";
+            } else if (time <= 300) {
+                hint = "Nice reaction!";
+            } else if (time <= 500) {
+                hint = "Could be better!";
+            } else {
+                hint = "Too slow!";
+            }
+
+            changeBackground(`${time} ms`, hint, "royalblue");
+
+            if (time < bestTime) {
+                bestTime = time;
+                $(".best").text(`Best Time: ${bestTime} ms`);
+            }
+        }
+
+        function startGame() {
+            status = 1;
+            $(".instructions").hide();
+            changeBackground("Get Ready!", "Wait for green...", "crimson");
+
+            const delay = Math.random() * 3000 + 2000;
+            setTimeout(() => {
+                if (status === 1) {
+                    status = 2;
+                    changeBackground("GO!", "Click now!", "springgreen");
+                    startTime = Date.now();
+                }
+            }, delay);
+        }
+
+        $("body").click(function () {
+            if (status === 0) {
+                startGame();
+            } else if (status === 1) {
+                tooSoon();
+            } else if (status === 2) {
+                showResult();
+            }
+        });
+    </script>
+</head>
+<body>
+    <h3 class="best">Best Time: None</h3>
+    <div class="box">
+        <h1>Reaction Test</h1>
+        <h2>Click as quickly as you can when the color changes to green!</h2>
+        <p class="instructions">Tap anywhere on the screen to start.</p>
+    </div>
+</body>
+</html>
